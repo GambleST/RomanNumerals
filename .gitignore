@@ -1,0 +1,121 @@
+## =========================
+## .NET / Rider .gitignore
+## =========================
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]est[Rr]esults/
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+
+# Rider / ReSharper
+.idea/
+*.sln.iml
+*.DotSettings.user
+_ReSharper*/
+_ReSharper.Caches/
+*.userprefs
+
+# Visual Studio (if opened there)
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build outputs
+*.dll
+*.exe
+*.app
+*.appx
+*.apk
+*.dmg
+*.pkg
+*.xap
+*.zip
+*.tar.gz
+
+# Publish outputs
+publish/
+wwwroot/lib/
+dist/
+node_modules/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuspec
+# NuGet restore results
+packages/
+# Uncomment below if you prefer to ignore NuGet sources
+# *.sln.nuget.props
+# *.sln.nuget.targets
+
+# Azure functions / Lambda
+local.settings.json
+*.aws.json
+aws-lambda-tools-defaults.json
+
+# Entity Framework
+Migrations/obj/
+*.sqlite
+*.db
+*.mdf
+*.ldf
+
+# User secrets
+secrets.json
+appsettings.*.local.json
+appsettings.Development.json
+
+# Logs, temp & cache
+*.tmp
+*.temp
+*.bak
+*.swp
+*.DS_Store
+Thumbs.db
+
+# Coverage / Analysis
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+*.codecov
+*.opencover.xml
+
+# JetBrains specific
+.idea/.idea.*
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/httpRequests
+.idea/caches/
+.idea/modules.xml
+.idea/shelf/
+
+# Docker
+*.pid
+.env
+docker-compose.override.yml
+/data/
+mnt/data/
+
+# Optional: Rider-generated run configs
+.idea/runConfigurations/
+
+# OS junk
+.DS_Store
+ehthumbs.db
+Icon?
+Thumbs.db
+Desktop.ini
+
+# Custom local data
+*.local.json
