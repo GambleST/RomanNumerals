@@ -47,6 +47,26 @@ public class RomanNumeralsFunctionTests
 
         Assert.Equal(first, second);
     }
+    
+    // D, L and V can never repeat and do not need to be validated.
+    [Fact]
+    public void ConvertToRomanNumerals_WhenCalledWithAllValues_NeverContainsFourIdenticalCharactersInARow()
+    {
+        // Arrange
+        var converter = new RomanNumeralConverter();
+        var invalidSequences = new[] { "IIII", "XXXX", "CCCC", "MMMM" };
+
+        // Act & Assert
+        for (int i = 1; i <= 3999; i++)
+        {
+            var result = converter.ConvertToRomanNumerals(i);
+
+            foreach (var invalidSequence in invalidSequences)
+            {
+                Assert.DoesNotContain(invalidSequence, result);
+            }
+        }
+    }
 
 
     [Theory]
@@ -74,7 +94,7 @@ public class RomanNumeralsFunctionTests
     [InlineData("123")]
     [InlineData("MCMXC@")]
     [InlineData("m m x x i")]
-    public void ConvertFromRomanNumerals_WhenCalledWithInvalidString_ThrowsArguementException(string invalidInput)
+    public void ConvertFromRomanNumerals_WhenCalledWithInvalidString_ThrowsArgumentException(string invalidInput)
     {
         var converter = new RomanNumeralConverter();
 
@@ -85,7 +105,7 @@ public class RomanNumeralsFunctionTests
     [Theory]
     [InlineData("")]
     [InlineData(null)]
-    public void ConvertFromRomanNumerals_WhenCalledWithNullOrEmptyString_ThrowsArguementException(string invalidInput)
+    public void ConvertFromRomanNumerals_WhenCalledWithNullOrEmptyString_ThrowsArgumentException(string invalidInput)
     {
         var converter = new RomanNumeralConverter();
 
@@ -107,5 +127,21 @@ public class RomanNumeralsFunctionTests
 
         // Assert
         Assert.Equal(expectedOutput, result);
+    }
+    
+    [Theory]
+    [InlineData("IL")]     // 49 should be XLIX
+    [InlineData("IC")]     // 99 should be XCIX
+    [InlineData("VX")]     // invalid subtractive form
+    [InlineData("IIV")]    // invalid repetition/subtractive
+    [InlineData("VV")]     // V cannot repeat
+    public void ConvertFromRomanNumerals_WhenCalledWithInValidNumeralInput_ThrowsArgumentException(string invalidNumeralInput)
+    {
+        // Arrange
+        var converter = new RomanNumeralConverter();
+
+        // Act & Assert
+        var ex = Assert.Throws<ArgumentException>(() => converter.ConvertFromRomanNumerals(invalidNumeralInput));
+        Assert.Contains("not a valid Roman numeral sequence", ex.Message, StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -5,7 +5,7 @@ namespace RomanNumerals;
 
 public class RomanNumeralConverter
 {
-    private readonly Dictionary<int, string> _intToNumeralDictionary = new()
+    private static readonly Dictionary<int, string> IntToNumeralDictionary = new()
     {
         { 1000, "M" },
         { 900, "CM" },
@@ -21,8 +21,8 @@ public class RomanNumeralConverter
         { 4, "IV" },
         { 1, "I" }
     };
-    
-    private readonly Dictionary<string, int> _numeralToIntDictionary = new()
+
+    private static readonly Dictionary<string, int> NumeralToIntDictionary = new()
     {
         { "M", 1000 },
         { "CM", 900 },
@@ -47,7 +47,7 @@ public class RomanNumeralConverter
         var stringBuilder = new StringBuilder();
         while (numberToConvert > 0)
         {
-            var highestPossibleInteger = _intToNumeralDictionary.Keys
+            var highestPossibleInteger = IntToNumeralDictionary.Keys
                 .Where(x => x <= numberToConvert)
                 .Max();
 
@@ -55,7 +55,7 @@ public class RomanNumeralConverter
             numberToConvert -= highestPossibleInteger;
 
             // Append the value (numerals) to the current string
-            stringBuilder.Append(_intToNumeralDictionary[highestPossibleInteger]);
+            stringBuilder.Append(IntToNumeralDictionary[highestPossibleInteger]);
         }
 
         var result = stringBuilder.ToString();
@@ -66,36 +66,44 @@ public class RomanNumeralConverter
     {
         if (String.IsNullOrWhiteSpace(stringToConvert))
             throw new ArgumentException("Input cannot be null or empty.", nameof(stringToConvert));
-        
+
         var formattedStringToConvert = stringToConvert.ToUpper().Trim();
         if (!Regex.IsMatch(formattedStringToConvert, @"^[IVXLCDM]+$"))
-            throw new ArgumentException("Input contains invalid numerals.", nameof(formattedStringToConvert));
-        
-        var numberValue = 0;
-        var validNumeralValues = _numeralToIntDictionary.Keys.ToList();
+            throw new ArgumentException("Input contains invalid numerals.", nameof(stringToConvert));
 
+        var numberValue = 0;
         var i = 0;
         while (i < formattedStringToConvert.Length)
         {
-            if (i + 1 < formattedStringToConvert.Length)
+            // Try a two-character combination first (e.g., "CM", "IV")
+            if (i + 1 < formattedStringToConvert.Length &&
+                NumeralToIntDictionary.TryGetValue(formattedStringToConvert.Substring(i, 2), out var numeralPair))
             {
-                var doubleNumerals = formattedStringToConvert.Substring(i, 2);
-                if (validNumeralValues.Any(combination => String.Equals(doubleNumerals, combination)))
-                {
-                    i += 2;
-                    numberValue += _numeralToIntDictionary[doubleNumerals];
-                    continue;
-                }
+                numberValue += numeralPair;
+                i += 2;
+                continue;
             }
-            
-            var singleNumeral = formattedStringToConvert.Substring(i, 1);
-            if (validNumeralValues.Any(combination => String.Equals(singleNumeral, combination)))
+
+            // Try a one-character symbol (e.g., "M", "D", "C")
+            if (NumeralToIntDictionary.TryGetValue(formattedStringToConvert.Substring(i, 1), out var numeralSingle))
             {
+                numberValue += numeralSingle;
                 i += 1;
-                numberValue += _numeralToIntDictionary[singleNumeral];
+                continue;
             }
+
+            // If neither matched, input is malformed
+            throw new ArgumentException("Input contains an invalid Roman numeral sequence.", nameof(stringToConvert));
         }
         
+        
+        // Convert the parsed number back to Roman Numerals and ensure it matches the correct form.
+        var correctRomanNumeralString = ConvertToRomanNumerals(numberValue);
+        if (!String.Equals(correctRomanNumeralString, formattedStringToConvert, StringComparison.Ordinal))
+        {
+            throw new ArgumentException("Input is not a valid Roman numeral sequence.", nameof(stringToConvert));
+        }
+
         return numberValue;
     }
 }
